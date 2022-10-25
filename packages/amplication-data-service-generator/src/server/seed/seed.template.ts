@@ -35,12 +35,20 @@ async function seed(bcryptSalt: Salt) {
   console.info("Seeding database...");
 
   const client = new PrismaClient();
-  const data = DATA;
-  await client.user.upsert({
-    where: { username: data.username },
-    update: {},
-    create: data,
-  });
+  const seedUsers = [
+    DATA
+  ];
+  await Promise.all(seedUsers.map(async u => {
+    const data = {
+      ...u,
+      password: await hash(u.password, bcryptSalt),
+    };
+    await client.user.upsert({
+      where: { username: data.username },
+      update: {},
+      create: data,
+    });
+  }));
   void client.$disconnect();
 
   console.info("Seeding database with custom seed...");
