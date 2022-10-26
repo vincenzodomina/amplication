@@ -12,7 +12,7 @@ import { hash } from "bcrypt";
 // @ts-ignore
 import { customSeed } from "./customSeed";
 
-declare const DATA: { username: string };
+declare const DATA: [{ username: string }];
 
 if (require.main === module) {
   dotenv.config();
@@ -35,14 +35,8 @@ async function seed(bcryptSalt: Salt) {
   console.info("Seeding database...");
 
   const client = new PrismaClient();
-  const seedUsers = [
-    DATA
-  ];
-  await Promise.all(seedUsers.map(async u => {
-    const data = {
-      ...u,
-      password: await hash(u.password, bcryptSalt),
-    };
+
+  await Promise.all(DATA.map(async data => {
     await client.user.upsert({
       where: { username: data.username },
       update: {},
