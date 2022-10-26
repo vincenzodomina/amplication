@@ -36,7 +36,8 @@ async function seed(bcryptSalt: Salt) {
 
   const client = new PrismaClient();
 
-  await Promise.all(DATA.map(async data => {
+  const seedUsers = DATA;
+  await Promise.all(seedUsers.map(async data => {
     await client.user.upsert({
       where: { username: data.username },
       update: {},
